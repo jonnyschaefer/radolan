@@ -1,4 +1,4 @@
-// radolan2img is an example program for the radolan package, that converts
+// radolan2png is an example program for the radolan package, that converts
 // radolan composite files to .png images. The created images also contain
 // an overlay showing the german borders and a latitude longitude mesh.
 package main
