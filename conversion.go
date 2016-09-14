@@ -19,7 +19,7 @@ func (z DBZ) PrecipitationRate() float64 {
 // Reflectivity returns the estimated reflectivity factor for the given precipitation
 // rate (mm/h). The used Z-R relation is described in [6].
 func Reflectivity(rate float64) DBZ {
-	return DBZ(10 * math.Log10(256 * math.Pow(rate, 1.42)))
+	return DBZ(10 * math.Log10(256*math.Pow(rate, 1.42)))
 }
 
 // ToDBZ converts the given radar video processor values (rvp-6) to radar reflectivity

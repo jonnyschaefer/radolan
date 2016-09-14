@@ -7,9 +7,9 @@ import (
 
 func TestConversion(t *testing.T) {
 	testcases := []struct {
-		rvp  RVP6
-		dbz  DBZ
-		zr float64
+		rvp RVP6
+		dbz DBZ
+		zr  float64
 	}{
 		{0, -32.5, 0.0001},
 		{65, 0, 0.0201},
@@ -32,7 +32,7 @@ func TestConversion(t *testing.T) {
 		if math.Abs(test.zr-zr) > 0.0001 {
 			t.Errorf("RVP6(%f).ToDBZ().PrecipitationRate() = %f; expected: %f", test.rvp, zr, test.zr)
 		}
-		if math.Abs(float64(test.dbz - rz)) > 0.0000001 {
+		if math.Abs(float64(test.dbz-rz)) > 0.0000001 {
 			t.Errorf("Reflectivity(RVP6(%f).ToDBZ().PrecipitationRate()) = %f; expected: %f",
 				test.rvp, rz, test.dbz)
 		}
