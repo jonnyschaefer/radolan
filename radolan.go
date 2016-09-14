@@ -62,6 +62,7 @@ type Composite struct {
 
 	CaptureTime  time.Time
 	ForecastTime time.Time
+	Interval     time.Duration
 
 	Data [][]RVP6 // rvp-6 data for each point [y][x]
 

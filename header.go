@@ -76,6 +76,20 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 		c.ForecastTime = c.CaptureTime.Add(time.Duration(min) * time.Minute)
 	}
 
+	// Parse Interval - Example "INT   5" or "INT1008"
+	if intr, ok := section["INT"]; ok {
+		min := 0
+		if _, err := fmt.Sscanf(intr, "%d", &min); err != nil {
+			return newError("parseHeader", "could not parse interval: "+err.Error())
+		}
+
+		c.Interval = time.Duration(min) * time.Minute
+		switch c.Product {
+		case "W1", "W2", "W3", "W4":
+			c.Interval *= 10
+		}
+	}
+
 	// Parse Dimensions - Example: "GP 450x 450" or "BG460460" or "GP 1500x1400"
 	dim := section["GP"]
 	if bg, ok := section["BG"]; ok {

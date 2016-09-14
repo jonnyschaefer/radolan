@@ -16,6 +16,7 @@ type headerTestcase struct {
 	expProduct      string
 	expCaptureTime  time.Time
 	expForecastTime time.Time
+	expInterval     time.Duration
 	expDx           int
 	expDy           int
 	expDataLength   int
@@ -65,6 +66,7 @@ func TestParseHeaderFZ(t *testing.T) {
 	ht.expProduct = "FZ"
 	ht.expCaptureTime, err1 = time.Parse(time.RFC1123, "Thu, 28 Jul 2016 23:05:00 CEST")
 	ht.expForecastTime, err2 = time.Parse(time.RFC1123, "Fri, 29 Jul 2016 00:45:00 CEST")
+	ht.expInterval = 5 * time.Minute
 	ht.expDx = 450
 	ht.expDy = 450
 	ht.expDataLength = 405160 - 154 // BY - header_etx_length
@@ -104,6 +106,12 @@ func testParseHeader(t *testing.T, ht *headerTestcase) {
 	if !dummy.ForecastTime.Equal(ht.expForecastTime) {
 		t.Errorf("%s.parseHeader(): ForecastTime: %#v; expected: %#v", ht.expProduct,
 			dummy.ForecastTime.String(), ht.expForecastTime.String())
+	}
+
+	// Interval
+	if dummy.Interval != ht.expInterval {
+		t.Errorf("%s.parseHeader(): Interval: %#v; expected: %#v", ht.expProduct,
+			dummy.Interval.String(), ht.expInterval.String())
 	}
 
 	// Dx Dy
