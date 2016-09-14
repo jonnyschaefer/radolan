@@ -101,6 +101,14 @@ func NewComposite(rd io.Reader) (comp *Composite, err error) {
 	return
 }
 
+// NewDummy creates a blank dummy composite with the given product label and dimensions. It can
+// be used for generic coordinate translation.
+func NewDummy(product string, dx, dy int) (comp *Composite) {
+	comp = &Composite{Product: product, Dx: dx, Dy: dy}
+	comp.calibrateProjection()
+	return
+}
+
 // At is shorthand for c.Data[y][x] and returns the radar video processor value (rvp-6) at
 // the given point. NaN is returned, if no data is available or the requested point is located
 // outside the scanned area.

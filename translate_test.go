@@ -35,10 +35,10 @@ func TestTranslate(t *testing.T) {
 		[]float64{43.8736, 18.2536, 1.0, 1.0},
 	}
 
-	dummyPG := &Composite{Product: "PG", Dx: 460, Dy: 460}
-	dummyFZ := &Composite{Product: "FZ", Dx: 450, Dy: 450}
-	dummyRX := &Composite{Product: "RX", Dx: 900, Dy: 900}
-	dummyEX := &Composite{Product: "EX", Dx: 1400, Dy: 1500}
+	dummyPG := NewDummy("PG", 460, 460)
+	dummyFZ := NewDummy("FZ", 450, 450)
+	dummyRX := NewDummy("RX", 900, 900)
+	dummyEX := NewDummy("EX", 1400, 1500)
 
 	testcases := []struct {
 		comp *Composite
@@ -51,8 +51,6 @@ func TestTranslate(t *testing.T) {
 	}
 
 	for _, test := range testcases {
-		test.comp.calibrateProjection()
-
 		t.Logf("dummy%s: Rx = %f; Ry = %f\n",
 			test.comp.Product, test.comp.Rx, test.comp.Ry)
 		t.Logf("dummy%s: offx = %f; offy = %f\n",
