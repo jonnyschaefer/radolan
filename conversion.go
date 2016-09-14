@@ -11,9 +11,15 @@ type DBZ float64
 type RVP6 float64
 
 // PrecipitationRate returns the estimated precipitation rate in mm/h for the given
-// reflectivity factor. The used Z-R relation is descibed in [6].
+// reflectivity factor. The used Z-R relation is described in [6].
 func (z DBZ) PrecipitationRate() float64 {
 	return math.Pow(math.Pow(10, float64(z)/10)/256, 1/1.42)
+}
+
+// Reflectivity returns the estimated reflectivity factor for the given precipitation
+// rate (mm/h). The used Z-R relation is described in [6].
+func Reflectivity(rate float64) DBZ {
+	return DBZ(10 * math.Log10(256 * math.Pow(rate, 1.42)))
 }
 
 // ToDBZ converts the given radar video processor values (rvp-6) to radar reflectivity

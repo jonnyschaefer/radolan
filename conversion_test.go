@@ -9,7 +9,7 @@ func TestConversion(t *testing.T) {
 	testcases := []struct {
 		rvp  RVP6
 		dbz  DBZ
-		rate float64
+		zr float64
 	}{
 		{0, -32.5, 0.0001},
 		{65, 0, 0.0201},
@@ -19,7 +19,8 @@ func TestConversion(t *testing.T) {
 
 	for _, test := range testcases {
 		dbz := test.rvp.ToDBZ()
-		rate := dbz.PrecipitationRate()
+		zr := dbz.PrecipitationRate()
+		rz := Reflectivity(zr)
 		rvp := dbz.ToRVP6()
 
 		if dbz != test.dbz {
@@ -28,8 +29,12 @@ func TestConversion(t *testing.T) {
 		if rvp != test.rvp {
 			t.Errorf("RVP6(%f).ToDBZ().ToRVP6() = %f; expected: %f", test.rvp, rvp, test.rvp)
 		}
-		if math.Abs(test.rate-rate) > 0.0001 {
-			t.Errorf("RVP6(%f).ToDBZ().PrecipitationRate() = %f; expected: %f", test.rvp, rate, test.rate)
+		if math.Abs(test.zr-zr) > 0.0001 {
+			t.Errorf("RVP6(%f).ToDBZ().PrecipitationRate() = %f; expected: %f", test.rvp, zr, test.zr)
+		}
+		if math.Abs(float64(test.dbz - rz)) > 0.0000001 {
+			t.Errorf("Reflectivity(RVP6(%f).ToDBZ().PrecipitationRate()) = %f; expected: %f",
+				test.rvp, rz, test.dbz)
 		}
 	}
 }
