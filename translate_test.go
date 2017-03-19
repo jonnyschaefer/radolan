@@ -5,6 +5,40 @@ import (
 	"testing"
 )
 
+func TestResolution(t *testing.T) {
+	equal := func(a, b float64) bool {
+		epsilon := 0.000001 // inaccuracy by 1mm
+		return math.Abs(a-b) < epsilon
+	}
+
+	var (
+		srcLat, srcLon = 48.173146, 11.546604 // Munich
+		dstLat, dstLon = 53.534366, 08.576135 // Bremerhaven
+		expDist        = 663.629945199998     // km
+	)
+	dummys := []*Composite{
+		NewDummy("SF", 900, 900),
+		NewDummy("SF", 450, 450),
+		NewDummy("SF", 225, 225),
+		NewDummy("SF", 112, 112),
+		NewDummy("SF", 627, 212),
+	}
+
+	for _, comp := range dummys {
+		srcX, srcY := comp.Translate(srcLat, srcLon)
+		dstX, dstY := comp.Translate(dstLat, dstLon)
+
+		vecX, vecY := (srcX-dstX)*comp.Rx, (srcY-dstY)*comp.Ry
+		resDist := math.Sqrt(vecX*vecX + vecY*vecY)
+
+		if !equal(resDist, expDist) {
+			t.Errorf("dummy.Rx = %#v, dummy.Ry = %#v; distance: %#v expected: %#v)",
+				comp.Rx, comp.Ry, resDist, expDist)
+		}
+	}
+
+}
+
 func TestTranslate(t *testing.T) {
 	equal := func(a, b float64) bool {
 		epsilon := 0.1 // inaccuracy by 100 meters
