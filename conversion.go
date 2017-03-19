@@ -10,16 +10,30 @@ type DBZ float64
 // Raw radar video processor value.
 type RVP6 float64
 
+// Z-R relationship mathematically expressed as Z = a * R^b
+type ZR struct {
+	A float64
+	B float64
+}
+
+// Common Z-R relationships
+var (
+	Aniol80          = ZR{256, 1.42} // operational use in germany, described in [6]
+	Doelling98       = ZR{316, 1.50} // operational use in switzerland
+	JossWaldvogel70  = ZR{300, 1.50}
+	MarshallPalmer55 = ZR{200, 1.60} // operational use in austria
+)
+
 // PrecipitationRate returns the estimated precipitation rate in mm/h for the given
-// reflectivity factor. The used Z-R relation is described in [6].
-func (z DBZ) PrecipitationRate() float64 {
-	return math.Pow(math.Pow(10, float64(z)/10)/256, 1/1.42)
+// reflectivity factor and Z-R relationship.
+func (z DBZ) PrecipitationRate(relation ZR) float64 {
+	return math.Pow(math.Pow(10, float64(z)/10)/relation.A, 1/relation.B)
 }
 
 // Reflectivity returns the estimated reflectivity factor for the given precipitation
-// rate (mm/h). The used Z-R relation is described in [6].
-func Reflectivity(rate float64) DBZ {
-	return DBZ(10 * math.Log10(256*math.Pow(rate, 1.42)))
+// rate (mm/h) and Z-R relationship.
+func Reflectivity(rate float64, relation ZR) DBZ {
+	return DBZ(10 * math.Log10(relation.A*math.Pow(rate, relation.B)))
 }
 
 // ToDBZ converts the given radar video processor values (rvp-6) to radar reflectivity

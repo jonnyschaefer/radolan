@@ -19,8 +19,8 @@ func TestConversion(t *testing.T) {
 
 	for _, test := range testcases {
 		dbz := test.rvp.ToDBZ()
-		zr := dbz.PrecipitationRate()
-		rz := Reflectivity(zr)
+		zr := dbz.PrecipitationRate(Aniol80)
+		rz := Reflectivity(zr, Aniol80)
 		rvp := dbz.ToRVP6()
 
 		if dbz != test.dbz {
