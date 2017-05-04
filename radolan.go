@@ -51,9 +51,9 @@ import (
 // coordinate system of the composite by using the translation method:
 //	x, y := c.Translate(52.51861, 13.40833)	// Berlin (lat, lon)
 //
-//	rvp := c.At(x, y)			// Raw value (rvp-6)
-//	dbz := rvp.ToDBZ()			// Cloud reflectivity (dBZ)
-//	rat := dbz.PrecipitationRate()		// Rainfall rate (mm/h)
+//	rvp := c.At(int(x), int(y))				// Raw value (rvp-6)
+//	dbz := rvp.ToDBZ()					// Cloud reflectivity (dBZ)
+//	rat := dbz.PrecipitationRate(radolan.Doelling98)	// Rainfall rate (mm/h) using Doelling98 as Z-R relationship
 //
 //	fmt.Println("Rainfall in Berlin [mm/h]:", rat)
 //
