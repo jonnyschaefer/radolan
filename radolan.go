@@ -60,9 +60,9 @@ import (
 type Composite struct {
 	Product string // composite product label
 
-	CaptureTime  time.Time
-	ForecastTime time.Time
-	Interval     time.Duration
+	CaptureTime  time.Time     // time of source data capture used for forcasting
+	ForecastTime time.Time     // data represents conditions predicted for this time
+	Interval     time.Duration // time duration until next forecast
 
 	Data [][]RVP6 // rvp-6 data for each point [y][x]
 
