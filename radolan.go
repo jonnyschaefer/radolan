@@ -19,10 +19,13 @@
 package radolan
 
 import (
+	"archive/tar"
 	"bufio"
+	"compress/gzip"
 	"fmt"
 	"io"
 	"math"
+	"sort"
 	"time"
 )
 
@@ -81,7 +84,7 @@ type Composite struct {
 	offy float64 // vertical projection offset
 }
 
-// NewComposite reads from rd and parses the composite.
+// NewComposite reads binary data from rd and parses the composite.
 func NewComposite(rd io.Reader) (comp *Composite, err error) {
 	reader := bufio.NewReader(rd)
 	comp = &Composite{}
@@ -99,6 +102,39 @@ func NewComposite(rd io.Reader) (comp *Composite, err error) {
 	comp.calibrateProjection()
 
 	return
+}
+
+// NewComposites reads tar gz data from rd and returns the parsed composites sorted by
+// ForecastTime in ascending order.
+func NewComposites(rd io.Reader) ([]*Composite, error) {
+	gzipReader, err := gzip.NewReader(rd)
+	if err != nil {
+		return nil, err
+	}
+	defer gzipReader.Close()
+
+	tarReader := tar.NewReader(gzipReader)
+
+	var cs []*Composite
+	for {
+		_, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		c, err := NewComposite(tarReader)
+		if err != nil {
+			return nil, err
+		}
+		cs = append(cs, c)
+	}
+
+	// sort composites in chronological order
+	sort.Slice(cs, func(i, j int) bool { return cs[i].ForecastTime.Before(cs[j].ForecastTime) })
+	return cs, nil
 }
 
 // NewDummy creates a blank dummy composite with the given product label and dimensions. It can
