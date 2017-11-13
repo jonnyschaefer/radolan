@@ -29,8 +29,8 @@ var errNoProjection = newError("cornerPoints", "warning: unable to identify grid
 func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight float64, err error) {
 	// national grid (pg) values described in [4]
 	if c.Product == "PG" {
-		originTop, originLeft = 54.6547, 01.9178 // N, E
-		edgeBottom, edgeRight = 46.9894, 14.7218 // N, E
+		originTop, originLeft = 54.66218275, 1.900684377 // N, E
+		edgeBottom, edgeRight = 46.98044293, 14.73300934 // N, E
 		return
 	}
 
