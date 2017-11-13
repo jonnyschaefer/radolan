@@ -52,6 +52,7 @@ import (
 //	dBZ = 10 * log(Z)
 // Real world geographical coordinates (latitude, longitude) can be projected into the
 // coordinate system of the composite by using the translation method:
+//	// if c.HasProjection
 //	x, y := c.Translate(52.51861, 13.40833)	// Berlin (lat, lon)
 //
 //	rvp := c.At(int(x), int(y))				// Raw value (rvp-6)
@@ -74,6 +75,8 @@ type Composite struct {
 
 	Rx float64 // horizontal resolution in km/px
 	Ry float64 // vertical resolution in km/px
+
+	HasProjection bool // coordinate translation available
 
 	dataLength int // length of binary section in bytes
 
