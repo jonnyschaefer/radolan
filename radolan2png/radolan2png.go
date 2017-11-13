@@ -5,11 +5,11 @@ package main
 
 import (
 	"fmt"
+	"gitlab.cs.fau.de/since/radolan"
 	"image/color"
 	"image/png"
 	"log"
 	"os"
-	"gitlab.cs.fau.de/since/radolan"
 )
 
 var (
@@ -51,20 +51,22 @@ func convert(in, out string) {
 	img := comp.Image(heatmap)
 
 	// draw borders
-	for _, b := range border {
-		// convert border points to data indices
-		x, y := comp.Translate(b[0], b[1])
+	if comp.HasProjection {
+		for _, b := range border {
+			// convert border points to data indices
+			x, y := comp.Translate(b[0], b[1])
 
-		// draw point
-		img.Set(int(x), int(y), borderColor)
-	}
+			// draw point
+			img.Set(int(x), int(y), borderColor)
+		}
 
-	// draw mesh
-	for e := 1.0; e < 16.0; e += 0.1 {
-		for n := 46.0; n < 55.0; n += 0.1 {
-			if e-float64(int(e)) < 0.1 || n-float64(int(n)) < 0.1 {
-				x, y := comp.Translate(n, e)
-				img.Set(int(x), int(y), meshColor)
+		// draw mesh
+		for e := 1.0; e < 16.0; e += 0.1 {
+			for n := 46.0; n < 55.0; n += 0.1 {
+				if e-float64(int(e)) < 0.1 || n-float64(int(n)) < 0.1 {
+					x, y := comp.Translate(n, e)
+					img.Set(int(x), int(y), meshColor)
+				}
 			}
 		}
 	}
