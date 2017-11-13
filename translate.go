@@ -49,8 +49,8 @@ func (c *Composite) calibrateProjection() {
 
 	// calibrate scaling
 	resx, resy := c.Translate(edgeBottom, edgeRight)
-	c.Rx = resx / float64(c.Dx-1)
-	c.Ry = resy / float64(c.Dy-1)
+	c.Rx = (resx) / float64(c.Dx)
+	c.Ry = (resy) / float64(c.Dy)
 }
 
 // Translate translates geographical coordinates (latitude north, longitude east) to the
