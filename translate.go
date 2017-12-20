@@ -4,6 +4,17 @@ import (
 	"math"
 )
 
+// corner coordinates for projection are defined by the grid type
+type grid int
+
+const (
+	unknownGrid          grid = iota
+	nationalGrid              // resolution: 900km * 900km
+	nationalPictureGrid       // resolution: 920km * 920km
+	extendedNationalGrid      // resolution: 900km * 1100km
+	middleEuropeanGrid        // resolution: 1400km * 1500km
+)
+
 // values described in [1]
 const (
 	earthRadius = 6370.04 // km
@@ -12,50 +23,64 @@ const (
 	junctionEast  = 10.0 // E
 )
 
-// isScaled returns true if the composite can be scaled to the given dimensions
-// while also maintaining the aspect ratio.
-func (c *Composite) isScaled(dx, dy int) bool {
-	epsilon := 0.00000001
-	return math.Abs(1-float64(c.Dy*dx)/float64(c.Dx*dy)) < epsilon
+// minRes repeatedly bisects the given edges until no further step is possible
+// for at least one edge. The resulting dimensions are the returned.
+func minRes(dx, dy int) (rdx int, rdy int) {
+	rdx, rdy = dx, dy
+
+	if rdx == 0 || rdy == 0 {
+		return
+	}
+	for rdx&1 == 0 && rdy&1 == 0 {
+		rdx >>= 1
+		rdy >>= 1
+	}
+	return
 }
 
 // errNoProjection means that the projection grid could not be identified.
 var errNoProjection = newError("cornerPoints", "warning: unable to identify grid")
 
-// cornerPoints returns corner coordinates of the national, extended or middle-european grid
-// based on the product label or resolution of the composite. The used values are
-// described in [1], [4] and [5].
-// If an error is returned, translation methods will not work.
-func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight float64, err error) {
-	// national grid (pg) values described in [4]
-	if c.Product == "PG" {
-		originTop, originLeft = 54.66218275, 1.900684377 // N, E
-		edgeBottom, edgeRight = 46.98044293, 14.73300934 // N, E
-		return
-	}
+// detectGrid identifies the used projection grid based on the composite dimensions
+func (c *Composite) detectGrid() grid {
+	dx, dy := minRes(c.Dx, c.Dy)
 
-	// national grid values described in [1]
-	if c.isScaled(900, 900) {
+	if mx, my := minRes(900, 900); dx == mx && dy == my {
+		return nationalGrid
+	}
+	if mx, my := minRes(920, 920); dx == mx && dy == my {
+		return nationalPictureGrid
+	}
+	if mx, my := minRes(900, 1100); dx == mx && dy == my {
+		return extendedNationalGrid
+	}
+	if mx, my := minRes(1400, 1500); dx == mx && dy == my {
+		return middleEuropeanGrid
+	}
+	return unknownGrid
+}
+
+// cornerPoints returns corner coordinates of the national, extended or
+// middle-european grid based on the dimensions of the composite. The used
+// values are described in [1], [4] and [5].  If an error is returned,
+// translation methods will not work.
+func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight float64, err error) {
+	switch c.detectGrid() {
+	case nationalGrid: // described in [1]
 		originTop, originLeft = 54.5877, 02.0715 // N, E
 		edgeBottom, edgeRight = 47.0705, 14.6209 // N, E
-		return
-	}
-
-	// extended national grid described in [5]
-	if c.isScaled(900, 1100) {
+	case nationalPictureGrid: // (pg) described in [4]
+		originTop, originLeft = 54.66218275, 1.900684377 // N, E
+		edgeBottom, edgeRight = 46.98044293, 14.73300934 // N, E
+	case extendedNationalGrid: // described in [5]
 		originTop, originLeft = 55.5482, 03.0889 // N, E
 		edgeBottom, edgeRight = 46.1827, 15.4801 // N, E
-		return
-	}
-
-	// middle european grid described in [5]
-	if c.isScaled(1400, 1500) {
+	case middleEuropeanGrid: // described in [5]
 		originTop, originLeft = 56.5423, -0.8654 // N, E
 		edgeBottom, edgeRight = 43.8736, 18.2536 // N, E
-		return
+	default:
+		err = errNoProjection
 	}
-
-	err = errNoProjection
 	return
 }
 

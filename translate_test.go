@@ -30,10 +30,10 @@ func TestResolution(t *testing.T) {
 		NewDummy("SF", 900, 900),
 		NewDummy("SF", 450, 450),
 		NewDummy("SF", 225, 225),
-		NewDummy("SF", 112, 112),
 		NewDummy("WX", 900, 1100),
 		NewDummy("WX", 450, 550),
 		NewDummy("EX", 1400, 1500),
+		NewDummy("EX", 700, 750),
 	}
 
 	for _, comp := range dummys {
