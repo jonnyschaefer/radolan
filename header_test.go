@@ -21,7 +21,7 @@ type headerTestcase struct {
 	expDy           int
 	expDataLength   int
 	expPrecision    int
-	expLevel        []DBZ
+	expLevel        []RVP6
 }
 
 func TestParseHeaderPG(t *testing.T) {
@@ -42,7 +42,7 @@ func TestParseHeaderPG(t *testing.T) {
 	ht.expDy = 460
 	ht.expDataLength = 22205 - 159 // BY - header_etx_length
 	ht.expPrecision = 0
-	ht.expLevel = []DBZ{1.0, 19.0, 28.0, 37.0, 46.0, 55.0}
+	ht.expLevel = []RVP6{1.0, 19.0, 28.0, 37.0, 46.0, 55.0}
 
 	if err1 != nil || err2 != nil {
 		t.Errorf("%s.parseHeader(): wrong testcase time.Parse", ht.expProduct)
@@ -71,7 +71,7 @@ func TestParseHeaderFZ(t *testing.T) {
 	ht.expDy = 450
 	ht.expDataLength = 405160 - 154 // BY - header_etx_length
 	ht.expPrecision = -1
-	ht.expLevel = []DBZ(nil)
+	ht.expLevel = []RVP6(nil)
 
 	if err1 != nil || err2 != nil {
 		t.Errorf("%s.parseHeader(): wrong testcase time.Parse", ht.expProduct)

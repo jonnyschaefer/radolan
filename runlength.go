@@ -76,11 +76,16 @@ func (c *Composite) decodeRunlength(dst []RVP6, line []byte) error {
 	return nil
 }
 
-// rvp6Runlength converts the raw value of level based composite products to radar video
-// processor values (rvp-6). NaN may be returned when the given value has no internal mapping.
+// rvp6Runlength sets the value of level based composite products to radar
+// video processor values (rvp-6).
 func (c *Composite) rvp6Runlength(value byte) RVP6 {
-	if c.level == nil || int(value) >= len(c.level) || value < 0 {
+	if value == 0 {
 		return RVP6(math.NaN())
 	}
-	return DBZ(c.level[value]).ToRVP6()
+	value--
+
+	if int(value) >= len(c.level) { // border markings
+		return RVP6(math.NaN())
+	}
+	return c.level[value]
 }

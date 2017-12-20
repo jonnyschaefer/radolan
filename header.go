@@ -3,7 +3,6 @@ package radolan
 import (
 	"bufio"
 	"fmt"
-	"strings"
 	"time"
 	"unicode"
 )
@@ -108,15 +107,25 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 	}
 
 	// Parse Level - Example "LV 6  1.0 19.0 28.0 37.0 46.0 55.0"
+	// or "LV12-31.5-24.5-17.5-10.5 -5.5 -1.0  1.0  5.5 10.5 17.5 24.5 31.5"
 	if lv, ok := section["LV"]; ok {
-		level := strings.Fields(lv)
-		if len(level) < 2 {
-			return newError("parseHeader", "invalid level count")
+		if len(lv) < 2 {
+			return newError("parseHeader", "level field too short")
 		}
 
-		c.level = make([]DBZ, len(level)-1)
-		for i, f := range level[1:] {
-			if _, err = fmt.Sscanf(f, "%f", &c.level[i]); err != nil {
+		var cnt int
+		if _, err = fmt.Sscanf(lv[:2], "%d", &cnt); err != nil {
+			return newError("parseHeader", "could not parse level count: "+err.Error())
+		}
+
+		if len(lv) != cnt*5+2 { // fortran format I2 + F5.1
+			return newError("parseHeader", "invalid level format: "+lv)
+		}
+
+		c.level = make([]RVP6, cnt)
+		for i := range c.level {
+			n := i * 5
+			if _, err = fmt.Sscanf(lv[n+2:n+7], "%f", &c.level[i]); err != nil {
 				return newError("parseHeader", "invalid level value: "+err.Error())
 			}
 		}

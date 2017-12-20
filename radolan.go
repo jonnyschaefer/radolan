@@ -37,16 +37,17 @@ import (
 // raw rvp-6 value (NaN if the no-data flag is set). This rvp-6 value is used differently
 // depending on the product type:
 //
-//	Product label    ||   raw value        "live" cloud reflectivity       "live" rainfall rate
-//	-----------------||   +-------+              +-----+                          +------+
-//	(PG), FZ, ...    ||   | rvp-6 |---ToDBZ()--->| dBZ |---PrecipitationRate()--->| mm/h |
-//	 RX, EX          ||   +---+---+              +-----+                          +------+
-//	-----------------|| - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//	 RW, SF,  ...    ||       |       +------+
-//	                 ||       +----- >| mm/h |
-//	                 ||               | mm/d |
-//	-----------------||               +------+
-//	                            aggregated precipitation
+// The rvp-6 value is used differently depending on the product type:
+//
+//	Product label            | rvp-6 value represents   | unit
+//	-------------------------+--------------------------+------------------------
+//	 PG, PC, PX*, ...        | cloud reflectivity       | dBZ
+//	 RX, WX, EX, FZ, FX, ... | raw value		    | convert to dBZ with ToDBZ()
+//	 RW, SF,  ...            | aggregated precipitation | mm/h or mm/d
+//	 PR*, ...                | doppler radial velocity  | m/s
+//
+// The cloud reflectivity (in dBZ) can be converted to rainfall rate (in mm/h)
+// via PrecipitationRate().
 //
 // The cloud reflectivity factor Z is stored in its logarithmic representation dBZ:
 //	dBZ = 10 * log(Z)
@@ -81,7 +82,7 @@ type Composite struct {
 	dataLength int // length of binary section in bytes
 
 	precision int   // multiplicator 10^precision for each raw value
-	level     []DBZ // maps data value to corresponding dBZ value in runlength based formats
+	level     []RVP6 // maps data value to corresponding rvp-6 value in runlength based formats
 
 	offx float64 // horizontal projection offset
 	offy float64 // vertical projection offset
