@@ -29,13 +29,16 @@ import (
 	"time"
 )
 
-// Radolan radar data is provided in so called composite formats. Each composite is a combined
-// image consisting of mulitiple radar sweeps spread over the composite area.
-// The composite c has a an internal resolution of c.Dx (horizontal) * c.Dy (vertical) records
-// covering a real surface of c.Dx * c.Rx * c.Dy * c.Dy square kilometers.
-// The pixel value at the position (x, y) is represented by c.Data[ y ][ x ] and is stored as
-// raw rvp-6 value (NaN if the no-data flag is set). This rvp-6 value is used differently
-// depending on the product type:
+// Radolan radar data is provided as single local sweeps or so called composite
+// formats. Each composite is a combined image consisting of mulitiple radar
+// sweeps spread over the composite area.
+// The 2D composite c has a an internal resolution of c.Dx (horizontal) * c.Dy
+// (vertical) records covering a real surface of c.Dx * c.Rx * c.Dy * c.Dy
+// square kilometers.
+// The pixel value at the position (x, y) is represented by
+// c.Data[ y ][ x ] and is stored as raw float value (called rvp-6) (NaN if the
+// no-data flag is set). Some 3D radar products feature multiple layers in
+// which the voxel at position (x, y, z) is accessible by c.DataZ[ z ][ y ][ x ].
 //
 // The rvp-6 value is used differently depending on the product type:
 //
@@ -69,10 +72,16 @@ type Composite struct {
 	ForecastTime time.Time     // data represents conditions predicted for this time
 	Interval     time.Duration // time duration until next forecast
 
-	Data [][]RVP6 // rvp-6 data for each point [y][x]
+	PlainData [][]RVP6 // rvp-6 data for parsed plain data element [y][x]
+	Px        int      // plain data width
+	Py        int      // plain data height
+
+	DataZ [][][]RVP6 // rvp-6 data for each voxel [z][y][x] (composites use only one z-layer)
+	Data  [][]RVP6   // rvp-6 data for each pixel [y][x] at layer 0 (alias for DataZ[0][x][y])
 
 	Dx int // data width
 	Dy int // data height
+	Dz int // data layer
 
 	Rx float64 // horizontal resolution in km/px
 	Ry float64 // vertical resolution in km/px
@@ -81,7 +90,7 @@ type Composite struct {
 
 	dataLength int // length of binary section in bytes
 
-	precision int   // multiplicator 10^precision for each raw value
+	precision int    // multiplicator 10^precision for each raw value
 	level     []RVP6 // maps data value to corresponding rvp-6 value in runlength based formats
 
 	offx float64 // horizontal projection offset
@@ -102,6 +111,7 @@ func NewComposite(rd io.Reader) (comp *Composite, err error) {
 	if err != nil {
 		return
 	}
+	comp.arrangeData()
 
 	comp.calibrateProjection()
 
@@ -153,10 +163,17 @@ func NewDummy(product string, dx, dy int) (comp *Composite) {
 // the given point. NaN is returned, if no data is available or the requested point is located
 // outside the scanned area.
 func (c *Composite) At(x, y int) RVP6 {
-	if x < 0 || y < 0 || x >= c.Dx || y >= c.Dy {
+	return c.AtZ(x, y, 0)
+}
+
+// AtZ is shorthand for c.DataZ[z][y][x] and returns the radar video processor value (rvp-6) at
+// the given point. NaN is returned, if no data is available or the requested point is located
+// outside the scanned volume.
+func (c *Composite) AtZ(x, y, z int) RVP6 {
+	if x < 0 || y < 0 || z < 0 || x >= c.Dx || y >= c.Dy || z >= c.Dz {
 		return RVP6(math.NaN())
 	}
-	return c.Data[y][x]
+	return c.DataZ[z][y][x]
 }
 
 // newError returns an error indicating the failed function and reason

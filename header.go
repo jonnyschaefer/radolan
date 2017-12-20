@@ -89,14 +89,28 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 		}
 	}
 
-	// Parse Dimensions - Example: "GP 450x 450" or "BG460460" or "GP 1500x1400"
-	dim := section["GP"]
-	if bg, ok := section["BG"]; ok {
-		dim = bg[:len(bg)/2] + "x" + bg[len(bg)/2:]
-	}
+	// Parse Dimensions - Example: "GP 450x 450" or "BG460460" or "GP 1500x1400" (if defined)
+	if dim, ok := section["GP"]; ok {
+		if _, err := fmt.Sscanf(dim, "%dx%d", &c.Dy, &c.Dx); err != nil {
+			return newError("parseHeader", "could not parse dimensions (GP): "+err.Error())
+		}
+		c.Px, c.Py = c.Dx, c.Dy // composite formats do not show elevation
 
-	if _, err := fmt.Sscanf(dim, "%dx%d", &c.Dy, &c.Dx); err != nil {
-		return newError("parseHeader", "could not parse dimensions: "+err.Error())
+	} else if dim, ok := section["BG"]; ok {
+		if _, err := fmt.Sscanf(dim, "%3d%3d", &c.Dy, &c.Dx); err != nil {
+			return newError("parseHeader", "could not parse dimensions (BG): "+err.Error())
+		}
+		c.Px, c.Py = c.Dx, c.Dy // composite formats do not show elevation
+
+	} else { // dimensions of local picture products not defined in header
+		v, ok := catalog[c.Product] // lookup in catalog
+		if !ok {
+			return newError("parseHeader", "no dimension information available")
+		}
+
+		c.Px, c.Py = v.px, v.py // plain data dimensions
+		c.Dx, c.Dy = v.dx, v.dy // data layer dimensions
+		c.Rx, c.Ry = v.rx, v.ry // data resolution
 	}
 
 	// Parse Precision - Example: "PR E-01" or "PR E+00"

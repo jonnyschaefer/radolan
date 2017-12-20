@@ -6,15 +6,15 @@ import (
 )
 
 // parseRunlength parses the runlength encoded composite and writes into the
-// previously created Data field of the composite.
+// previously created PlainData field of the composite.
 func (c *Composite) parseRunlength(reader *bufio.Reader) error {
-	for i := range c.Data {
+	for i := range c.PlainData {
 		line, err := c.readLineRunlength(reader)
 		if err != nil {
 			return err
 		}
 
-		err = c.decodeRunlength(c.Data[i], line)
+		err = c.decodeRunlength(c.PlainData[i], line)
 		if err != nil {
 			return err
 		}

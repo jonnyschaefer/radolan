@@ -7,16 +7,16 @@ import (
 )
 
 // parseLittleEndian parses the little endian encoded composite as described in [1] and [3].
-// Result are written into the previously created Data field of the composite.
+// Result are written into the previously created PlainData field of the composite.
 func (c *Composite) parseLittleEndian(reader *bufio.Reader) error {
-	last := len(c.Data) - 1
-	for i := range c.Data {
+	last := len(c.PlainData) - 1
+	for i := range c.PlainData {
 		line, err := c.readLineLittleEndian(reader)
 		if err != nil {
 			return err
 		}
 
-		err = c.decodeLittleEndian(c.Data[last-i], line) // write vertically flipped
+		err = c.decodeLittleEndian(c.PlainData[last-i], line) // write vertically flipped
 		if err != nil {
 			return err
 		}
