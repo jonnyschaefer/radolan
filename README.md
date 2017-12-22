@@ -13,6 +13,7 @@ Besides local scans, the following grids are currently supported:
 - Middle-European Grid (1400km x 1500km)
 
 Tested input products: 
+
 | Product | Grid              | Description             |
 | ------- | ----------------- | ----------------------- |
 | EX      | middle-european   | reflectivity            |
