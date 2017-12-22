@@ -5,11 +5,13 @@ package main
 
 import (
 	"fmt"
+	"gitlab.cs.fau.de/since/radolan/radolan2png/vis"
 	"gitlab.cs.fau.de/since/radolan"
 	"image/color"
 	"image/png"
 	"log"
 	"os"
+	"time"
 )
 
 var (
@@ -38,20 +40,35 @@ func convert(in, out string) {
 	comp, err := radolan.NewComposite(infile)
 	care(err)
 
-	// choose color function
-	heatmap := radolan.HeatmapReflectivity
-	switch comp.Product[0] {
-	case 'R', 'W', 'S', 'E':
-		if comp.Product[1] != 'X' {
-			heatmap = radolan.HeatmapAccumulatedDay
+	fmt.Printf("%s-Image (%s) showing %s\n", comp.Product, comp.DataUnit, comp.ForecastTime)
+
+	var heatmap vis.ColorFunc
+	switch comp.DataUnit {
+	case radolan.Unit_mm:
+		max := 200.0
+		if comp.Interval <= time.Hour {
+			max = 100.0
 		}
+		if comp.Interval >= time.Hour * 24 * 7 {
+			max = 400.0
+		}
+		heatmap = vis.Heatmap(0.1, max, vis.Log)
+	case radolan.Unit_dBZ:
+		heatmap = vis.HeatmapReflectivity
+	case radolan.Unit_km:
+		heatmap = vis.Graymap(0, 15, vis.Id)
+	case radolan.Unit_mps:
+		heatmap = vis.HeatmapRadialVelocity
 	}
 
 	// convert composite to image using the color function
-	img := comp.Image(heatmap)
+	img := vis.Image(heatmap, comp, 0) // TODO: select layer
 
 	// draw borders
 	if comp.HasProjection {
+		// print grid dimensions
+		fmt.Printf("detected grid: %.1f km * %.1f km\n", float64(comp.Dx) * comp.Rx, float64(comp.Dy) * comp.Ry)
+
 		for _, b := range border {
 			// convert border points to data indices
 			x, y := comp.Translate(b[0], b[1])
