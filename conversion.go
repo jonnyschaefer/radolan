@@ -4,11 +4,11 @@ import (
 	"math"
 )
 
-// Radar reflectivity factor Z in logarithmic representation dBZ: dBZ = 10 * log(Z)
-type DBZ float64
+var NaN = float32(math.NaN())
 
-// Raw radar video processor value.
-type RVP6 float64
+func IsNaN(f float32) (is bool) {
+	return f != f
+}
 
 // Z-R relationship mathematically expressed as Z = a * R^b
 type ZR struct {
@@ -26,30 +26,30 @@ var (
 
 // PrecipitationRate returns the estimated precipitation rate in mm/h for the given
 // reflectivity factor and Z-R relationship.
-func (z DBZ) PrecipitationRate(relation ZR) float64 {
-	return math.Pow(math.Pow(10, float64(z)/10)/relation.A, 1/relation.B)
+func PrecipitationRate(relation ZR, dBZ float32) (rate float64) {
+	return math.Pow(math.Pow(10, float64(dBZ)/10)/relation.A, 1/relation.B)
 }
 
 // Reflectivity returns the estimated reflectivity factor for the given precipitation
 // rate (mm/h) and Z-R relationship.
-func Reflectivity(rate float64, relation ZR) DBZ {
-	return DBZ(10 * math.Log10(relation.A*math.Pow(rate, relation.B)))
+func Reflectivity(relation ZR, rate float64) (dBZ float32) {
+	return float32(10 * math.Log10(relation.A*math.Pow(float64(rate), relation.B)))
 }
 
-// ToDBZ converts the given radar video processor values (rvp-6) to radar reflectivity
+// toDBZ converts the given radar video processor values (rvp-6) to radar reflectivity
 // factors in decibel relative to Z (dBZ).
-func (r RVP6) ToDBZ() DBZ {
-	return DBZ(r/2.0 - 32.5)
+func toDBZ(rvp6 float32) (dBZ float32) {
+	return rvp6/2.0 - 32.5
 }
 
-// ToRVP6 converts the given radar reflectivity factors (dBZ) to radar video processor
+// toRVP6 converts the given radar reflectivity factors (dBZ) to radar video processor
 // values (rvp-6).
-func (z DBZ) ToRVP6() RVP6 {
-	return RVP6((z + 32.5) * 2)
+func toRVP6(dBZ float32) float32 {
+	return (dBZ + 32.5) * 2
 }
 
 // rvp6Raw converts the raw value to radar video processor values (rvp-6) by applying the
 // products precision field.
-func (c *Composite) rvp6Raw(value int) RVP6 {
-	return RVP6(float64(value) * math.Pow10(c.precision))
+func (c *Composite) rvp6Raw(value int) float32 {
+	return float32(value) * float32(math.Pow10(c.precision))
 }

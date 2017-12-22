@@ -2,7 +2,6 @@ package radolan
 
 import (
 	"bufio"
-	"math"
 )
 
 // parseRunlength parses the runlength encoded composite and writes into the
@@ -38,11 +37,10 @@ func (c *Composite) readLineRunlength(rd *bufio.Reader) (line []byte, err error)
 }
 
 // decodeRunlength decodes the source line and writes to the given destination.
-func (c *Composite) decodeRunlength(dst []RVP6, line []byte) error {
+func (c *Composite) decodeRunlength(dst []float32, line []byte) error {
 	// fill destination as runlength encoding will induce gaps
-	nan := RVP6(math.NaN())
 	for i := range dst {
-		dst[i] = nan
+		dst[i] = NaN
 	}
 
 	dstpos := 0
@@ -78,14 +76,14 @@ func (c *Composite) decodeRunlength(dst []RVP6, line []byte) error {
 
 // rvp6Runlength sets the value of level based composite products to radar
 // video processor values (rvp-6).
-func (c *Composite) rvp6Runlength(value byte) RVP6 {
+func (c *Composite) rvp6Runlength(value byte) float32 {
 	if value == 0 {
-		return RVP6(math.NaN())
+		return NaN
 	}
 	value--
 
 	if int(value) >= len(c.level) { // border markings
-		return RVP6(math.NaN())
+		return NaN
 	}
 	return c.level[value]
 }

@@ -7,8 +7,8 @@ import (
 
 func TestConversion(t *testing.T) {
 	testcases := []struct {
-		rvp RVP6
-		dbz DBZ
+		rvp float32
+		dbz float32
 		zr  float64
 	}{
 		{0, -32.5, 0.0001},
@@ -18,22 +18,22 @@ func TestConversion(t *testing.T) {
 	}
 
 	for _, test := range testcases {
-		dbz := test.rvp.ToDBZ()
-		zr := dbz.PrecipitationRate(Aniol80)
-		rz := Reflectivity(zr, Aniol80)
-		rvp := dbz.ToRVP6()
+		dbz := toDBZ(test.rvp)
+		zr := PrecipitationRate(Aniol80, dbz)
+		rz := Reflectivity(Aniol80, zr)
+		rvp := toRVP6(dbz)
 
 		if dbz != test.dbz {
-			t.Errorf("RVP6(%f).ToDBZ() = %f; expected: %f", test.rvp, dbz, test.dbz)
+			t.Errorf("toDBZ(%f) = %f; expected: %f", test.rvp, dbz, test.dbz)
 		}
 		if rvp != test.rvp {
-			t.Errorf("RVP6(%f).ToDBZ().ToRVP6() = %f; expected: %f", test.rvp, rvp, test.rvp)
+			t.Errorf("toRVP6(toDBZ(%f)) = %f; expected: %f", test.rvp, rvp, test.rvp)
 		}
 		if math.Abs(test.zr-zr) > 0.0001 {
-			t.Errorf("RVP6(%f).ToDBZ().PrecipitationRate() = %f; expected: %f", test.rvp, zr, test.zr)
+			t.Errorf("PrecipitationRate(Aniol80, toDBZ(%f)) = %f; expected: %f", test.rvp, zr, test.zr)
 		}
 		if math.Abs(float64(test.dbz-rz)) > 0.0000001 {
-			t.Errorf("Reflectivity(RVP6(%f).ToDBZ().PrecipitationRate()) = %f; expected: %f",
+			t.Errorf("Reflectivity(PrecipitationRate(toDBZ(%f))) = %f; expected: %f",
 				test.rvp, rz, test.dbz)
 		}
 	}

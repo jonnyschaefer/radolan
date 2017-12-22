@@ -3,7 +3,6 @@ package radolan
 import (
 	"bufio"
 	"io"
-	"math"
 )
 
 // parseLittleEndian parses the little endian encoded composite as described in [1] and [3].
@@ -37,7 +36,7 @@ func (c *Composite) readLineLittleEndian(rd *bufio.Reader) (line []byte, err err
 }
 
 // decodeLittleEndian decodes the source line and writes to the given destination.
-func (c *Composite) decodeLittleEndian(dst []RVP6, line []byte) error {
+func (c *Composite) decodeLittleEndian(dst []float32, line []byte) error {
 	if len(line)%2 != 0 || len(dst)*2 != len(line) {
 		return newError("decodeLittleEndian", "wrong destination or source size")
 	}
@@ -52,18 +51,27 @@ func (c *Composite) decodeLittleEndian(dst []RVP6, line []byte) error {
 
 // rvp6LittleEndian converts the raw two byte tuple of little endian encoded composite products
 // to radar video processor values (rvp-6). NaN may be returned when the no-data flag is set.
-func (c *Composite) rvp6LittleEndian(tuple [2]byte) RVP6 {
+func (c *Composite) rvp6LittleEndian(tuple [2]byte) float32 {
 	var value int = 0x0F & int(tuple[1])
 	value = (value << 8) + int(tuple[0])
 
 	if tuple[1]&(1<<5) != 0 { // error code: no-data
-		return RVP6(math.NaN())
+		return NaN
 	}
 
 	if tuple[1]&(1<<6) != 0 { // flag: negative value
 		value *= -1
 	}
 
-	// set decimal point
-	return c.rvp6Raw(value)
+	conv := c.rvp6Raw(value) // set decimal point
+
+	// little endian encoded formats are also used for mm/h
+	if c.DataUnit != Unit_dBZ {
+		return conv
+	}
+
+	// Even though this format supports negative values and custom
+	// precision they do not make use of this and we still have to subtract
+	// the bias and scale it (RADVOR FX, dBZ)
+	return toDBZ(conv)
 }

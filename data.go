@@ -52,9 +52,9 @@ func (c *Composite) parseData(reader *bufio.Reader) error {
 	}
 
 	// create Data fields
-	c.PlainData = make([][]RVP6, c.Py)
+	c.PlainData = make([][]float32, c.Py)
 	for i := range c.PlainData {
-		c.PlainData[i] = make([]RVP6, c.Px)
+		c.PlainData[i] = make([]float32, c.Px)
 	}
 
 	return parse[c.identifyEncoding()](c, reader)
@@ -64,12 +64,12 @@ func (c *Composite) parseData(reader *bufio.Reader) error {
 // vertical projection
 func (c *Composite) arrangeData() {
 	if c.Py%c.Dy == 0 { // multiple layers are linked downwards
-		c.DataZ = make([][][]RVP6, c.Py/c.Dy)
+		c.DataZ = make([][][]float32, c.Py/c.Dy)
 		for i := range c.DataZ {
 			c.DataZ[i] = c.PlainData[c.Dy*i : c.Dy*(i+1)] // split layers
 		}
 	} else { // only use bottom most part of plain data
-		c.DataZ = [][][]RVP6{c.PlainData[c.Py-c.Dy:]} // strip elevation
+		c.DataZ = [][][]float32{c.PlainData[c.Py-c.Dy:]} // strip elevation
 	}
 
 	c.Dz = len(c.DataZ)

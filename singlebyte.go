@@ -3,7 +3,6 @@ package radolan
 import (
 	"bufio"
 	"io"
-	"math"
 )
 
 // parseSingleByte parses the single byte encoded composite as described in [1] and writes
@@ -37,7 +36,7 @@ func (c *Composite) readLineSingleByte(rd *bufio.Reader) (line []byte, err error
 }
 
 // decodeSingleByte decodes the source line and writes to the given destination.
-func (c *Composite) decodeSingleByte(dst []RVP6, line []byte) error {
+func (c *Composite) decodeSingleByte(dst []float32, line []byte) error {
 	if len(dst) != len(line) {
 		return newError("decodeSingleByte", "wrong destination or source size")
 	}
@@ -52,11 +51,17 @@ func (c *Composite) decodeSingleByte(dst []RVP6, line []byte) error {
 // rvp6SingleByte converts the raw byte of single byte encoded
 // composite products to radar video processor values (rvp-6). NaN may be returned
 // when the no-data flag is set.
-func (c *Composite) rvp6SingleByte(value byte) RVP6 {
+func (c *Composite) rvp6SingleByte(value byte) float32 {
 	if value == 250 { // error code: no-data
-		return RVP6(math.NaN())
+		return NaN
 	}
 
-	// set decimal point
-	return c.rvp6Raw(int(value))
+	conv := c.rvp6Raw(int(value)) // set decimal point
+
+	// not sure if single byte formats are even used for other things than dBZ (RX, dBZ)
+	if c.DataUnit != Unit_dBZ {
+		return conv
+	}
+
+	return toDBZ(conv)
 }

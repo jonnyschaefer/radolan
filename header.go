@@ -109,7 +109,7 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 		c.Px, c.Py = c.Dx, c.Dy // composite formats do not show elevation
 
 	} else { // dimensions of local picture products not defined in header
-		v, ok := catalog[c.Product] // lookup in catalog
+		v, ok := dimensionCatalog[c.Product] // lookup in catalog
 		if !ok {
 			return newError("parseHeader", "no dimension information available")
 		}
@@ -142,7 +142,7 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 			return newError("parseHeader", "invalid level format: "+lv)
 		}
 
-		c.level = make([]RVP6, cnt)
+		c.level = make([]float32, cnt)
 		for i := range c.level {
 			n := i * 5
 			if _, err = fmt.Sscanf(lv[n+2:n+7], "%f", &c.level[i]); err != nil {

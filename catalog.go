@@ -12,7 +12,7 @@ type spec struct {
 }
 
 // local picture products do not provide dimensions in header
-var catalog = map[string]spec{
+var dimensionCatalog = map[string]spec{
 	"OL": {200, 224, 200, 200, 2, 2},  // reflectivity (no clutter detection)
 	"OX": {200, 224, 200, 200, 1, 1},  // reflectivity (no clutter detection)
 	"PD": {200, 224, 200, 200, 1, 1},  // radial velocity
