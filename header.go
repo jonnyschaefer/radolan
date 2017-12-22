@@ -52,6 +52,12 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 	// Parse Product - Example: "PG" or "FZ"
 	c.Product = header[:2]
 
+	// Lookup Unit
+	c.DataUnit = Unit_unknown
+	if unit, ok := unitCatalog[c.Product]; ok {
+		c.DataUnit = unit
+	}
+
 	// Parse DataLength - Example: "BY 405160"
 	if _, err := fmt.Sscanf(section["BY"], "%d", &c.dataLength); err != nil {
 		return newError("parseHeader", "could not parse data length: "+err.Error())

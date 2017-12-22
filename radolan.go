@@ -41,6 +41,7 @@ import (
 // which the voxel at position (x, y, z) is accessible by c.DataZ[ z ][ y ][ x ].
 //
 // The rvp-6 value is used differently depending on the product type:
+// (also consult the DataUnit field of the Composite)
 //
 //	Product label            | rvp-6 value represents   | unit
 //	-------------------------+--------------------------+------------------------
@@ -75,6 +76,7 @@ type Composite struct {
 	PlainData [][]RVP6 // rvp-6 data for parsed plain data element [y][x]
 	Px        int      // plain data width
 	Py        int      // plain data height
+	DataUnit Unit
 
 	DataZ [][][]RVP6 // rvp-6 data for each voxel [z][y][x] (composites use only one z-layer)
 	Data  [][]RVP6   // rvp-6 data for each pixel [y][x] at layer 0 (alias for DataZ[0][x][y])
