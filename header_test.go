@@ -86,7 +86,7 @@ func testParseHeader(t *testing.T, ht *headerTestcase) {
 
 	// run
 	if err := dummy.parseHeader(reader); err != nil {
-		t.Errorf("%s.parseHeader(): returned error: %#v", err.Error())
+		t.Errorf("%s.parseHeader(): returned error: %#v", ht.expProduct, err.Error())
 	}
 
 	// test results
