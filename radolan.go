@@ -1,10 +1,26 @@
 // Package radolan parses the DWD RADOLAN / RADVOR radar composite format. This data
-// is available at the Global Basic Dataset (http://www.dwd.de/DE/leistungen/gds/gds.html).
+// is available at the Open Data Portal (https://www.dwd.de/DE/leistungen/opendata/opendata.html).
 // The obtained results can be processed and visualized with additional functions.
 //
-// Currently the national grid [1][4] and the extended european grid [5] are supported.
-// Tested input products are PG, FZ, SF, RW, RX and EX. Those can be considered working with
-// sufficient accuracy.
+// Tested input products and grids:
+//
+//	| Product | Grid              | Description             |
+//	| ------- | ----------------- | ----------------------- |
+//	| EX      | middle-european   | reflectivity            |
+//	| FX      | national          | nowcast reflectivity    |
+//	| FZ      | national          | nowcast reflectivity    |
+//	| PE      | local             | echo top                |
+//	| PF      | local             | reflectivity            |
+//	| PG      | national picture  | reflectivity            |
+//	| PR      | local             | doppler radial velocity |
+//	| PX      | local             | reflectivity            |
+//	| PZ      | local             | 3D reflectivity CAPPI   |
+//	| RW      | national          | hourly accumulated      |
+//	| RX      | national          | reflectivity            |
+//	| SF      | national          | daily accumulated       |
+//	| WX      | extended national | reflectivity            |
+//
+// Those can be considered working with sufficient accuracy.
 //
 // In cases, where the publicly available format specification is unprecise or contradictory,
 // reverse engineering was used to obtain reasonable approaches.
@@ -12,10 +28,10 @@
 //
 //	[1] https://www.dwd.de/DE/leistungen/radolan/radolan_info/radolan_radvor_op_komposit_format_pdf.pdf
 //	[2] https://www.dwd.de/DE/leistungen/gds/weiterfuehrende_informationen.zip
-//	[3]  - legend_radar_products_fz_forecast.pdf
-//	[4]  - legend_radar_products_pg_coordinates.pdf
-//	[5]  - legend_radar_products_radolan_rw_sf.pdf
-//	[6] https://www.dwd.de/DE/leistungen/radarniederschlag/rn_info/download_niederschlagsbestimmung.pdf
+//	[3] https://www.dwd.de/DE/leistungen/radarprodukte/formatbeschreibung_fxdaten.pdf
+//	[4] https://www.dwd.de/DE/leistungen/opendata/help/radar/radar_pg_coordinates_pdf.pdf
+//	[5] https://www.dwd.de/DE/leistungen/radarniederschlag/rn_info/download_niederschlagsbestimmung.pdf
+//	[6] hex editor and much reverse engineering
 package radolan
 
 import (
@@ -78,7 +94,7 @@ type Composite struct {
 	Py        int         // plain data height
 
 	DataZ [][][]float32 // data for each voxel [z][y][x] (composites use only one z-layer)
-	Data  [][]float32   //  data for each pixel [y][x] at layer 0 (alias for DataZ[0][x][y])
+	Data  [][]float32   // data for each pixel [y][x] at layer 0 (alias for DataZ[0][x][y])
 
 	Dx int // data width
 	Dy int // data height

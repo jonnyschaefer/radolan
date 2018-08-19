@@ -62,7 +62,7 @@ func (c *Composite) detectGrid() grid {
 
 // cornerPoints returns corner coordinates of the national, extended or
 // middle-european grid based on the dimensions of the composite. The used
-// values are described in [1], [4] and [5].  If an error is returned,
+// values are described in [1], [4].  If an error is returned,
 // translation methods will not work.
 func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight float64, err error) {
 	switch c.detectGrid() {
@@ -72,10 +72,10 @@ func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight
 	case nationalPictureGrid: // (pg) described in [4]
 		originTop, originLeft = 54.66218275, 1.900684377 // N, E
 		edgeBottom, edgeRight = 46.98044293, 14.73300934 // N, E
-	case extendedNationalGrid: // described in [5]
+	case extendedNationalGrid: // described in [1]
 		originTop, originLeft = 55.5482, 03.0889 // N, E
 		edgeBottom, edgeRight = 46.1827, 15.4801 // N, E
-	case middleEuropeanGrid: // described in [5]
+	case middleEuropeanGrid: // described in [1]
 		originTop, originLeft = 56.5423, -0.8654 // N, E
 		edgeBottom, edgeRight = 43.8736, 18.2536 // N, E
 	default:

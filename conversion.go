@@ -21,7 +21,7 @@ type ZR struct {
 
 // Common Z-R relationships
 var (
-	Aniol80          = NewZR(256, 1.42) // operational use in germany, described in [6]
+	Aniol80          = NewZR(256, 1.42) // operational use in germany, described in [5]
 	Doelling98       = NewZR(316, 1.50) // operational use in switzerland
 	JossWaldvogel70  = NewZR(300, 1.50)
 	MarshallPalmer55 = NewZR(200, 1.60) // operational use in austria
