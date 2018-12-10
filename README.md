@@ -6,6 +6,9 @@ for weather radar data.
 The obtained results can be processed and visualized with additional functions.
 The example program `radolan2png` is included to quickly convert composite files to png images.
 
+This library was developed for [Regenampel.de](https://regenampel.de/), but
+offers even more features for awesome ideas projects.
+
 Besides local scans, the following grids are currently supported:
 - National Grid (900km x 900km)
 - National Picture Grid (920km x 920km)
