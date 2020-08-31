@@ -109,5 +109,6 @@ var unitCatalog = map[string]Unit{
 	"W2": Unit_mm,
 	"W3": Unit_mm,
 	"W4": Unit_mm,
+	"WN": Unit_dBZ,
 	"WX": Unit_dBZ,
 }
