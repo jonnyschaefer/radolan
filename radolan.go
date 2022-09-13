@@ -31,7 +31,8 @@
 //	[3] https://www.dwd.de/DE/leistungen/radarprodukte/formatbeschreibung_fxdaten.pdf
 //	[4] https://www.dwd.de/DE/leistungen/opendata/help/radar/radar_pg_coordinates_pdf.pdf
 //	[5] https://www.dwd.de/DE/leistungen/radarniederschlag/rn_info/download_niederschlagsbestimmung.pdf
-//	[6] hex editor and much reverse engineering
+//	[6] https://www.dwd.de/DE/leistungen/radarprodukte/formatbeschreibung_wndaten.pdf
+//	[7] hex editor and much reverse engineering
 package radolan
 
 import (
@@ -112,6 +113,8 @@ type Composite struct {
 
 	offx float64 // horizontal projection offset
 	offy float64 // vertical projection offset
+
+	wgs84 bool
 }
 
 // ErrUnknownUnit indicates that the unit of the radar data is not defined in

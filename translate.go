@@ -86,6 +86,11 @@ func (c *Composite) cornerPoints() (originTop, originLeft, edgeBottom, edgeRight
 
 // calibrateProjection initializes fields that are necessary for coordinate translation
 func (c *Composite) calibrateProjection() {
+	// calibration is only neccessary for sperical projection
+	if c.wgs84 {
+		return
+	}
+
 	// get corner points
 	originTop, originLeft, edgeBottom, edgeRight, err := c.cornerPoints()
 	if err != nil {
@@ -101,18 +106,22 @@ func (c *Composite) calibrateProjection() {
 	c.Rx, c.Ry = 1.0, 1.0
 
 	// calibrate offset correction
-	c.offx, c.offy = c.Translate(originTop, originLeft)
+	c.offx, c.offy = c.Project(originTop, originLeft)
 
 	// calibrate scaling
-	resx, resy := c.Translate(edgeBottom, edgeRight)
+	resx, resy := c.Project(edgeBottom, edgeRight)
 	c.Rx = (resx) / float64(c.Dx)
 	c.Ry = (resy) / float64(c.Dy)
 }
 
-// Translate translates geographical coordinates (latitude north, longitude east) to the
+// Project transforms geographical coordinates (latitude north, longitude east) to the
 // according data indices in the coordinate system of the composite.
-// NaN is returned when no projection is available. Procedures adapted from [1].
-func (c *Composite) Translate(north, east float64) (x, y float64) {
+// NaN is returned when no projection is available. Procedures adapted from [1] and [6].
+func (c *Composite) Project(north, east float64) (x, y float64) {
+	return c.projectSphere(north, east)
+}
+
+func (c *Composite) projectSphere(north, east float64) (x, y float64) {
 	if !c.HasProjection {
 		x, y = math.NaN(), math.NaN()
 		return

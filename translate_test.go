@@ -37,8 +37,8 @@ func TestResolution(t *testing.T) {
 	}
 
 	for _, comp := range dummys {
-		srcX, srcY := comp.Translate(srcLat, srcLon)
-		dstX, dstY := comp.Translate(dstLat, dstLon)
+		srcX, srcY := comp.Project(srcLat, srcLon)
+		dstX, dstY := comp.Project(dstLat, dstLon)
 
 		resDist := dist(srcX*comp.Rx, srcY*comp.Ry, dstX*comp.Rx, dstY*comp.Ry)
 
@@ -50,7 +50,7 @@ func TestResolution(t *testing.T) {
 
 }
 
-func TestTranslate(t *testing.T) {
+func TestProject(t *testing.T) {
 	nationalGridPG := [][]float64{
 		[]float64{54.66218275, 1.900684377, 0, 0},
 		[]float64{54.81884457, 15.88724008, 460, 0},
@@ -116,14 +116,14 @@ func TestTranslate(t *testing.T) {
 
 		for _, edge := range test.edge {
 			// result
-			rx, ry := test.comp.Translate(edge[0], edge[1])
+			rx, ry := test.comp.Project(edge[0], edge[1])
 			//expected
 			ex := edge[2]
 			ey := edge[3]
 
 			// allowed inaccuracy by 100 meters
 			if dist(rx, ry, ex, ey) > 0.1 {
-				t.Errorf("dummy%s.Translate(%#v, %#v) = (%#v, %#v); expected: (%#v, %#v)",
+				t.Errorf("dummy%s.Project(%#v, %#v) = (%#v, %#v); expected: (%#v, %#v)",
 					test.comp.Product, edge[0], edge[1], rx, ry, ex, ey)
 			}
 		}
@@ -215,10 +215,10 @@ func testGrid(t *testing.T, mode gridMode, dummys ...*Composite) {
 				}
 				p += length
 
-				tx, ty := comp.Translate(phi, lamda)
+				tx, ty := comp.Project(phi, lamda)
 				ex, ey := float64(x)+offx, float64(y)+offy
 				if dist(tx, ty, ex, ey) > 0.01 { // 10m
-					t.Errorf("dummy%s.Translate(%#v, %#v) = (%#v, %#v); expected: (%#v, %#v)",
+					t.Errorf("dummy%s.Project(%#v, %#v) = (%#v, %#v); expected: (%#v, %#v)",
 						comp.Product, phi, lamda, tx, ty, ex, ey)
 				}
 			}
