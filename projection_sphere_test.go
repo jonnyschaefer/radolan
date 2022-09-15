@@ -27,13 +27,13 @@ func TestResolution(t *testing.T) {
 	)
 
 	dummys := []*Composite{
-		NewDummy("SF", 900, 900),
-		NewDummy("SF", 450, 450),
-		NewDummy("SF", 225, 225),
-		NewDummy("WX", 900, 1100),
-		NewDummy("WX", 450, 550),
-		NewDummy("EX", 1400, 1500),
-		NewDummy("EX", 700, 750),
+		NewDummy("SF", 3, 900, 900),
+		NewDummy("SF", 3, 450, 450),
+		NewDummy("SF", 3, 225, 225),
+		NewDummy("WX", 3, 900, 1100),
+		NewDummy("WX", 3, 450, 550),
+		NewDummy("EX", 3, 1400, 1500),
+		NewDummy("EX", 3, 700, 750),
 	}
 
 	for _, comp := range dummys {
@@ -83,6 +83,14 @@ func TestProject(t *testing.T) {
 		[]float64{46.1827, 15.4801, 900, 1100},
 	}
 
+	sphereDE1200Grid := [][]float64{
+		[]float64{55.86584289, 1.435612143, 0, 0},
+		[]float64{55.84848692, 18.76728172, 1100, 0},
+		[]float64{51.00000000, 09.00000000, 470, 600},
+		[]float64{45.69587048, 3.551921296, 0, 1200},
+		[]float64{45.68358331, 16.60186543, 1100, 1200},
+	}
+
 	middleEuropeanGrid := [][]float64{
 		[]float64{56.5423, -0.8654, 0, 0},
 		[]float64{56.4505, 21.6986, 1400, 0},
@@ -91,11 +99,12 @@ func TestProject(t *testing.T) {
 		[]float64{43.8736, 18.2536, 1400, 1500},
 	}
 
-	dummyPG := NewDummy("PG", 460, 460)
-	dummyFZ := NewDummy("FZ", 450, 450)
-	dummyRX := NewDummy("RX", 900, 900)
-	dummyWX := NewDummy("WX", 900, 1100)
-	dummyEX := NewDummy("EX", 1400, 1500)
+	dummyPG := NewDummy("PG", 0, 460, 460)
+	dummyFZ := NewDummy("FZ", 3, 450, 450)
+	dummyRX := NewDummy("RX", 3, 900, 900)
+	dummyWX := NewDummy("WX", 3, 900, 1100)
+	dummyWN := NewDummy("WN", 3, 1100, 1200)
+	dummyEX := NewDummy("EX", 3, 1400, 1500)
 
 	testcases := []struct {
 		comp *Composite
@@ -105,6 +114,7 @@ func TestProject(t *testing.T) {
 		{dummyFZ, nationalGridHalf},
 		{dummyRX, nationalGrid},
 		{dummyWX, extendedNationalGrid},
+		{dummyWN, sphereDE1200Grid},
 		{dummyEX, middleEuropeanGrid},
 	}
 
@@ -139,15 +149,15 @@ const (
 
 func TestGrid(t *testing.T) {
 	testGrid(t, gridCenter,
-		NewDummy("SF", 900, 900),
-		NewDummy("EX", 1400, 1500),
-		NewDummy("WX", 900, 1100),
+		NewDummy("SF", 3, 900, 900),
+		NewDummy("EX", 3, 1400, 1500),
+		NewDummy("WX", 3, 900, 1100),
 	)
 
 	testGrid(t, gridBottom,
-		NewDummy("SF", 900, 900),
-		NewDummy("EX", 1400, 1500),
-		// NewDummy("WX", 900, 1100), testdata unavailable
+		NewDummy("SF", 3, 900, 900),
+		NewDummy("EX", 3, 1400, 1500),
+		// NewDummy("WX", 3, 900, 1100), testdata unavailable
 	)
 }
 

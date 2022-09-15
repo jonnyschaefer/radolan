@@ -71,7 +71,7 @@ func convert(in, out string) {
 
 		for _, b := range border {
 			// convert border points to data indices
-			x, y := comp.Translate(b[0], b[1])
+			x, y := comp.Project(b[0], b[1])
 
 			// draw point
 			img.Set(int(x), int(y), borderColor)
@@ -81,7 +81,7 @@ func convert(in, out string) {
 		for e := 1.0; e < 16.0; e += 0.1 {
 			for n := 46.0; n < 55.0; n += 0.1 {
 				if e-float64(int(e)) < 0.1 || n-float64(int(n)) < 0.1 {
-					x, y := comp.Translate(n, e)
+					x, y := comp.Project(n, e)
 					img.Set(int(x), int(y), meshColor)
 				}
 			}

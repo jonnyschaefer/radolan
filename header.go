@@ -153,13 +153,8 @@ func (c *Composite) parseHeader(reader *bufio.Reader) error {
 
 	// Parse Format Version - Example "VS 5"
 	if vs, ok := section["VS"]; ok {
-		var format int
-		if _, err = fmt.Sscanf(vs, "%d", &format); err != nil {
+		if _, err = fmt.Sscanf(vs, "%d", &c.Format); err != nil {
 			return newError("parseHeader", "invalid format value: "+err.Error())
-		}
-
-		if format >= 5 { // as described in [6]
-			c.wgs84 = true
 		}
 	}
 

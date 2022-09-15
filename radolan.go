@@ -72,9 +72,9 @@ import (
 // The cloud reflectivity factor Z is stored in its logarithmic representation dBZ:
 //	dBZ = 10 * log(Z)
 // Real world geographical coordinates (latitude, longitude) can be projected into the
-// coordinate system of the composite by using the translation method:
+// coordinate system of the composite by using the projection method:
 //	// if c.HasProjection
-//	x, y := c.Translate(52.51861, 13.40833)	// Berlin (lat, lon)
+//	x, y := c.Project(52.51861, 13.40833)	// Berlin (lat, lon)
 //
 //	dbz := c.At(int(x), int(y))					// Raw value is Cloud reflectivity (dBZ)
 //	rat := radolan.PrecipitationRate(radolan.Doelling98, dbz)	// Rainfall rate (mm/h) using Doelling98 as Z-R relationship
@@ -104,7 +104,9 @@ type Composite struct {
 	Rx float64 // horizontal resolution in km/px
 	Ry float64 // vertical resolution in km/px
 
-	HasProjection bool // coordinate translation available
+	HasProjection bool // coordinate projection available
+
+	Format int // Version Format
 
 	dataLength int // length of binary section in bytes
 
@@ -114,7 +116,7 @@ type Composite struct {
 	offx float64 // horizontal projection offset
 	offy float64 // vertical projection offset
 
-	wgs84 bool
+	proj_wgs84 *projection
 }
 
 // ErrUnknownUnit indicates that the unit of the radar data is not defined in
@@ -180,10 +182,10 @@ func NewComposites(rd io.Reader) ([]*Composite, error) {
 	return cs, nil
 }
 
-// NewDummy creates a blank dummy composite with the given product label and dimensions. It can
-// be used for generic coordinate translation.
-func NewDummy(product string, dx, dy int) (comp *Composite) {
-	comp = &Composite{Product: product, Dx: dx, Dy: dy}
+// NewDummy creates a blank dummy composite with the given product label, format version, and dimensions. It can
+// be used for generic coordinate projection.
+func NewDummy(product string, format, dx, dy int) (comp *Composite) {
+	comp = &Composite{Product: product, Format: format, Dx: dx, Dy: dy}
 	comp.calibrateProjection()
 	return
 }
