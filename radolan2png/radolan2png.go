@@ -5,8 +5,8 @@ package main
 
 import (
 	"fmt"
-	"gitlab.cs.fau.de/since/radolan/radolan2png/vis"
 	"gitlab.cs.fau.de/since/radolan"
+	"gitlab.cs.fau.de/since/radolan/radolan2png/vis"
 	"image/color"
 	"image/png"
 	"log"
@@ -49,7 +49,7 @@ func convert(in, out string) {
 		if comp.Interval <= time.Hour {
 			max = 100.0
 		}
-		if comp.Interval >= time.Hour * 24 * 7 {
+		if comp.Interval >= time.Hour*24*7 {
 			max = 400.0
 		}
 		heatmap = vis.Heatmap(0.1, max, vis.Log)
@@ -67,7 +67,7 @@ func convert(in, out string) {
 	// draw borders
 	if comp.HasProjection {
 		// print grid dimensions
-		fmt.Printf("detected grid: %.1f km * %.1f km\n", float64(comp.Dx) * comp.Rx, float64(comp.Dy) * comp.Ry)
+		fmt.Printf("detected grid: %.1f km * %.1f km\n", float64(comp.Dx)*comp.Rx, float64(comp.Dy)*comp.Ry)
 
 		for _, b := range border {
 			// convert border points to data indices

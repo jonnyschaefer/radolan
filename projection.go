@@ -129,7 +129,6 @@ func (c *Composite) calibrateProjection() {
 	c.Ry = (resy) / float64(c.Dy)
 }
 
-
 // Project transforms geographical coordinates (latitude north, longitude east) to the
 // according data indices in the coordinate system of the composite.
 // NaN is returned when no projection is available. Procedures adapted from [1] and [6].

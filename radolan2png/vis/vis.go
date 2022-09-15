@@ -1,10 +1,10 @@
 package vis
 
 import (
+	"gitlab.cs.fau.de/since/radolan"
 	"image"
 	"image/color"
 	"math"
-	"gitlab.cs.fau.de/since/radolan"
 )
 
 // A ColorFunc can be used to assign colors to data values for image creation.
