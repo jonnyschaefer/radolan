@@ -13,6 +13,7 @@ Besides local scans, the following grids are currently supported:
 - National Grid (900km x 900km)
 - National Picture Grid (920km x 920km)
 - Extended National Grid (900km x 1100km)
+- DE1200 National Grid (1100km x 1200km)
 - Middle-European Grid (1400km x 1500km)
 
 Tested input products: 
@@ -32,8 +33,11 @@ Tested input products:
 | RX      | national          | reflectivity            |
 | SF      | national          | daily accumulated       |
 | WX      | extended national | reflectivity            | 
+| WN      | DE1200 Sphere     | nowcast reflectivity    |
+| WN      | DE1200 WGS84      | nowcast reflectivity    |
 
 Those can be considered working with sufficient accuracy.
+Other formats _might_ be working (not tested).
 
 ### Documentation
 Documentation is included in the corresponding source files and also available at
