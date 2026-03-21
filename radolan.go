@@ -154,7 +154,9 @@ func NewComposite(rd io.Reader) (comp *Composite, err error) {
 }
 
 // NewComposites reads .tar.bz2 data from rd and returns the parsed composites sorted by
-// ForecastTime in ascending order.
+// ForecastTime in ascending order. ErrUnknownUnit is treated as a non-fatal warning:
+// the composite is included in the result and the error is not propagated, consistent
+// with the documented semantics of ErrUnknownUnit in NewComposite.
 func NewComposites(rd io.Reader) ([]*Composite, error) {
 	bzipReader := bzip2.NewReader(rd)
 
@@ -171,7 +173,7 @@ func NewComposites(rd io.Reader) ([]*Composite, error) {
 		}
 
 		c, err := NewComposite(tarReader)
-		if err != nil {
+		if err != nil && err != ErrUnknownUnit {
 			return nil, err
 		}
 		cs = append(cs, c)

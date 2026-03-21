@@ -102,6 +102,7 @@ func TestProject(t *testing.T) {
 	dummyPG := NewDummy("PG", 0, 460, 460)
 	dummyFZ := NewDummy("FZ", 3, 450, 450)
 	dummyRX := NewDummy("RX", 3, 900, 900)
+	dummyRE := NewDummy("RE", 5, 900, 900) // RADVOR-RE: Format=5, national grid
 	dummyWX := NewDummy("WX", 3, 900, 1100)
 	dummyWN := NewDummy("WN", 3, 1100, 1200)
 	dummyEX := NewDummy("EX", 3, 1400, 1500)
@@ -113,6 +114,7 @@ func TestProject(t *testing.T) {
 		{dummyPG, nationalGridPG},
 		{dummyFZ, nationalGridHalf},
 		{dummyRX, nationalGrid},
+		{dummyRE, nationalGrid}, // same grid corners as RX, different format
 		{dummyWX, extendedNationalGrid},
 		{dummyWN, sphereDE1200Grid},
 		{dummyEX, middleEuropeanGrid},
