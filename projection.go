@@ -106,9 +106,9 @@ func (c *Composite) calibrateProjection() {
 	if c.Format >= 5 {
 		if detectedGrid == DE1200Grid {
 			c.proj_wgs84 = proj_DE1200_WGS84
-		} else {
-			return
 		}
+		// For other Format≥5 grids (e.g. national 900×900 used by RADVOR-RE),
+		// fall through to sphere projection calibration below.
 	}
 
 	// found matching projection rule
